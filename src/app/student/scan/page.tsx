@@ -6,7 +6,6 @@ import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { QRScanner } from "@/components/qr-scanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { cn } from "@/lib/utils";
 import { 
@@ -65,7 +64,7 @@ export default function StudentScanPage() {
           ? `Attendance successfully recorded for ${data.attendance.courseCode}`
           : "Attendance recorded successfully."
       );
-    } catch (error) {
+    } catch {
       setStatusType("error");
       setStatus("Network error. Please check your connection and try again.");
     } finally {
