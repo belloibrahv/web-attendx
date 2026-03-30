@@ -70,6 +70,7 @@ export function DashboardShell({
           {/* Sidebar Content */}
           <div className="relative h-full flex flex-col text-white">
             <BrandMark 
+              disableNavigation
               compact 
               className="bg-white/20 backdrop-blur-sm border-white/30 text-white shadow-lg hover:bg-white/25 [&_.text-primary]:text-white [&_.text-slate-600]:text-white/80" 
             />

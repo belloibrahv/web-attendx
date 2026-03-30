@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BarChart3, BookOpen, QrCode, Shield, Users } from "lucide-react";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { ResearchPresentation } from "@/components/research-presentation";
@@ -14,7 +13,7 @@ import {
   supervisor,
   workflowSteps,
 } from "@/data/site";
-import { authOptions } from "@/lib/auth";
+import { getSafeSession } from "@/lib/safe-session";
 
 const operationalPillars = [
   {
@@ -41,16 +40,18 @@ const supervisorFocus = [
 ];
 
 export default async function HomePage() {
-  try {
-    const session = await getServerSession(authOptions);
-    const role = session?.user?.role;
+  // Use safe session handling to prevent JWT errors
+  const { session, error } = await getSafeSession();
+  
+  // If we have a valid session with a role, redirect to appropriate dashboard
+  if (session?.user?.role && !error) {
+    const role = session.user.role;
     if (role === "ADMIN") redirect("/admin");
     if (role === "LECTURER") redirect("/lecturer");
     if (role === "STUDENT") redirect("/student");
-  } catch (error) {
-    // Handle JWT session errors gracefully - just continue to show homepage
-    console.log("Session error on homepage (non-critical):", error);
   }
+  
+  // If there was a session error, we'll just show the homepage (user needs to login again)
 
   const supervisorImageClass = supervisor.image.endsWith(".svg")
     ? "object-contain p-6"

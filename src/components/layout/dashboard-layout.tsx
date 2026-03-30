@@ -101,7 +101,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
         <div className="flex h-full flex-col">
           {/* Sidebar header */}
           <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-            <BrandMark compact className="bg-sidebar-primary/10 border-sidebar-primary/20" />
+            <BrandMark compact disableNavigation className="bg-sidebar-primary/10 border-sidebar-primary/20" />
             <Button
               variant="ghost"
               size="icon-sm"
