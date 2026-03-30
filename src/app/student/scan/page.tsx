@@ -211,12 +211,13 @@ export default function StudentScanPage() {
                         </div>
                       </div>
                       
-                      <Button asChild className="w-full">
-                        <Link href="/student/history">
-                          View Attendance History
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <Link 
+                        href="/student/history"
+                        className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-2.5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        View Attendance History
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
                     </div>
                   )}
                   

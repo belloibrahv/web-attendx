@@ -39,25 +39,27 @@ export default function NotFound() {
               Page Not Found
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed max-w-lg mx-auto">
-              The page you're looking for doesn't exist or has been moved. 
-              Let's get you back to the right place.
+              The page you&apos;re looking for doesn&apos;t exist or has been moved. 
+              Let&apos;s get you back to the right place.
             </p>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
-              <Link href="/home">
-                <Home className="w-4 h-4 mr-2" />
-                Go to Homepage
-              </Link>
-            </Button>
-            <Button variant="outline" asChild className="bg-white/60 border-white/40 hover:bg-white/80">
-              <Link href="/login">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Login
-              </Link>
-            </Button>
+            <Link 
+              href="/home"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <Home className="w-4 h-4" />
+              Go to Homepage
+            </Link>
+            <Link 
+              href="/login"
+              className="inline-flex items-center gap-2 bg-white/60 border border-white/40 hover:bg-white/80 text-slate-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Login
+            </Link>
           </div>
 
           {/* Help Links */}

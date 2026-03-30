@@ -25,6 +25,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 
+// Helper function to get user initials
+function getUserInitials(name?: string | null): string {
+  if (!name) return "U"
+  return name
+    .split(" ")
+    .map(part => part.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
 interface DashboardLayoutProps {
   children: ReactNode
   role: "ADMIN" | "LECTURER" | "STUDENT"
@@ -107,7 +118,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
               <Avatar className="h-10 w-10">
                 <AvatarImage src="" />
                 <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground">
-                  {getUserInitials(session?.user?.name)}
+                  {getUserInitials(session?.user?.name ?? undefined)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

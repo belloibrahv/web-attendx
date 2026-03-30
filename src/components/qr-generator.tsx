@@ -37,7 +37,7 @@ export function QRGenerator({ sessionData, className }: QRGeneratorProps) {
     sessionId: sessionData.id,
     token: sessionData.sessionToken,
     courseCode: sessionData.courseCode,
-    timestamp: Date.now()
+    timestamp: new Date().getTime()
   })
 
   const downloadQR = () => {

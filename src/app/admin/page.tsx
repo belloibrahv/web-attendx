@@ -351,12 +351,13 @@ export default async function AdminPage() {
                   <p className="text-sm text-slate-600 mb-6">
                     No attendance sessions have been created yet.
                   </p>
-                  <Button asChild className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
-                    <Link href="/admin/courses">
-                      Set Up Courses
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <Link 
+                    href="/admin/courses"
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5"
+                  >
+                    Set Up Courses
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </div>
               )}
             </CardContent>

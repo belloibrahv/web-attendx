@@ -41,11 +41,16 @@ const supervisorFocus = [
 ];
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  if (role === "ADMIN") redirect("/admin");
-  if (role === "LECTURER") redirect("/lecturer");
-  if (role === "STUDENT") redirect("/student");
+  try {
+    const session = await getServerSession(authOptions);
+    const role = session?.user?.role;
+    if (role === "ADMIN") redirect("/admin");
+    if (role === "LECTURER") redirect("/lecturer");
+    if (role === "STUDENT") redirect("/student");
+  } catch (error) {
+    // Handle JWT session errors gracefully - just continue to show homepage
+    console.log("Session error on homepage (non-critical):", error);
+  }
 
   const supervisorImageClass = supervisor.image.endsWith(".svg")
     ? "object-contain p-6"

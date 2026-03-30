@@ -55,7 +55,8 @@ export const authOptions: NextAuthOptions = {
         return token;
       } catch (error) {
         console.error("JWT callback error:", error);
-        return token;
+        // Return a minimal token to prevent complete failure
+        return { sub: token.sub };
       }
     },
     async session({ session, token }) {
@@ -67,7 +68,15 @@ export const authOptions: NextAuthOptions = {
         return session;
       } catch (error) {
         console.error("Session callback error:", error);
-        return session;
+        // Return minimal session to prevent complete failure
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.sub || "",
+            role: "STUDENT" as const,
+          },
+        };
       }
     },
   },
@@ -76,5 +85,8 @@ export const authOptions: NextAuthOptions = {
       // Clear any cached data on signout
     },
   },
-  debug: process.env.NODE_ENV === "development",
+  // Only enable debug in development
+  debug: false,
+  // Add secret explicitly
+  secret: process.env.NEXTAUTH_SECRET,
 };

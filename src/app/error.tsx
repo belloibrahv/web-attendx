@@ -79,12 +79,13 @@ export default function Error({ error, reset }: ErrorProps) {
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button variant="outline" asChild className="bg-white/60 border-white/40 hover:bg-white/80">
-              <Link href="/home">
-                <Home className="w-4 h-4 mr-2" />
-                Go to Homepage
-              </Link>
-            </Button>
+            <Link 
+              href="/home"
+              className="inline-flex items-center gap-2 bg-white/60 border border-white/40 hover:bg-white/80 text-slate-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <Home className="w-4 h-4" />
+              Go to Homepage
+            </Link>
           </div>
 
           {/* Additional Help */}
