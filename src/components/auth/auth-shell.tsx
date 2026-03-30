@@ -72,7 +72,7 @@ export function AuthShell({
               <div className="flex items-center gap-4">
                 <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-lg">
                   <Image
-                    src="/logo.png"
+                    src="/main-logo.png"
                     alt="Tai Solarin University of Education logo"
                     fill
                     className="object-contain p-3"

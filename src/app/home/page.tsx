@@ -183,7 +183,7 @@ export default async function HomePage() {
 
                       <div className="relative hidden h-20 w-20 shrink-0 overflow-hidden rounded-3xl border border-primary/10 bg-white shadow-md sm:block">
                         <Image
-                          src="/logo.png"
+                          src="/main-logo.png"
                           alt="Tai Solarin University of Education logo"
                           fill
                           className="object-contain p-3"

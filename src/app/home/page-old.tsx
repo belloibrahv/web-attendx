@@ -119,7 +119,7 @@ export default async function HomePage() {
                 <div className="relative space-y-6">
                   <div className="inline-flex rounded-full bg-white/10 p-3">
                     <Image
-                      src="/logo.png"
+                      src="/main-logo.png"
                       alt="TASUED logo"
                       width={180}
                       height={48}

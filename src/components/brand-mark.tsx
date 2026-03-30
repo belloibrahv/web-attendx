@@ -27,7 +27,7 @@ export function BrandMark({
     >
       <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 ring-2 ring-white/60 transition-all duration-300 group-hover:ring-primary/30 group-hover:scale-110">
         <Image
-          src="/logo.png"
+          src="/main-logo.png"
           alt="Tai Solarin University of Education logo"
           fill
           className="object-contain p-1.5 transition-transform duration-300 group-hover:scale-105"
