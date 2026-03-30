@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading";
+import { cn } from "@/lib/utils";
 import { 
   CheckCircle, 
   XCircle, 
@@ -85,49 +86,49 @@ export default function StudentScanPage() {
 
   return (
     <DashboardShell role="student" title="Mark Attendance">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
         {/* Instructions Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-primary" />
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <BookOpen className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
               How to Mark Attendance
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm sm:text-base">
               Follow these steps to successfully record your attendance
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
+          <CardContent className="pt-0">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-sm font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white text-xs font-bold sm:h-8 sm:w-8 sm:text-sm">
                   1
                 </div>
                 <div>
-                  <h4 className="font-medium">Locate QR Code</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-sm font-medium sm:text-base">Locate QR Code</h4>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     Find the QR code displayed by your lecturer
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-sm font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white text-xs font-bold sm:h-8 sm:w-8 sm:text-sm">
                   2
                 </div>
                 <div>
-                  <h4 className="font-medium">Scan Code</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-sm font-medium sm:text-base">Scan Code</h4>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     Use the camera scanner below to scan the QR code
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-sm font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white text-xs font-bold sm:h-8 sm:w-8 sm:text-sm">
                   3
                 </div>
                 <div>
-                  <h4 className="font-medium">Confirm Attendance</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="text-sm font-medium sm:text-base">Confirm Attendance</h4>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     Your attendance will be automatically recorded
                   </p>
                 </div>
@@ -136,7 +137,7 @@ export default function StudentScanPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
           {/* Scanner Section */}
           <div className="space-y-4">
             {showScanner && !isSubmitting && statusType !== "success" && (
@@ -147,10 +148,10 @@ export default function StudentScanPage() {
             )}
 
             {isSubmitting && (
-              <Card className="w-full max-w-md mx-auto">
-                <CardContent className="flex flex-col items-center justify-center py-12">
+              <Card className="w-full">
+                <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
                   <LoadingSpinner size="lg" className="mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Processing Attendance</h3>
+                  <h3 className="text-base font-medium mb-2 sm:text-lg">Processing Attendance</h3>
                   <p className="text-sm text-muted-foreground text-center">
                     Please wait while we record your attendance...
                   </p>
@@ -169,31 +170,32 @@ export default function StudentScanPage() {
                   ? "border-red-200 bg-red-50" 
                   : ""
               }>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {statusType === "success" && <CheckCircle className="h-5 w-5 text-green-600" />}
-                    {statusType === "error" && <XCircle className="h-5 w-5 text-red-600" />}
-                    {statusType === "idle" && <AlertCircle className="h-5 w-5 text-blue-600" />}
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    {statusType === "success" && <CheckCircle className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />}
+                    {statusType === "error" && <XCircle className="h-4 w-4 text-red-600 sm:h-5 sm:w-5" />}
+                    {statusType === "idle" && <AlertCircle className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />}
                     {statusType === "success" ? "Attendance Recorded" : 
                      statusType === "error" ? "Scan Failed" : "Processing"}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className={
+                <CardContent className="pt-0">
+                  <p className={cn(
+                    "text-sm sm:text-base",
                     statusType === "success" ? "text-green-700" :
                     statusType === "error" ? "text-red-700" : 
                     "text-muted-foreground"
-                  }>
+                  )}>
                     {status}
                   </p>
                   
                   {attendanceMeta && (
                     <div className="mt-4 space-y-3">
-                      <div className="rounded-lg bg-white/80 p-4 border">
-                        <h4 className="font-medium text-green-800 mb-2">
+                      <div className="rounded-lg bg-white/80 p-3 border sm:p-4">
+                        <h4 className="font-medium text-green-800 mb-2 text-sm sm:text-base">
                           {attendanceMeta.courseCode} - {attendanceMeta.courseTitle}
                         </h4>
-                        <div className="space-y-1 text-sm text-muted-foreground">
+                        <div className="space-y-1 text-xs text-muted-foreground sm:text-sm">
                           <div className="flex items-center gap-2">
                             <Clock className="h-3 w-3" />
                             <span>Recorded at {new Date(attendanceMeta.markedAt).toLocaleString()}</span>

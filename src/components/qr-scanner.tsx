@@ -41,11 +41,21 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
       if (elementRef.current && !scannerRef.current) {
         const config = {
           fps: 10,
-          qrbox: { width: 250, height: 250 },
+          qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
+            // Make QR box responsive to screen size
+            const minEdgePercentage = 0.7; // 70% of the smaller dimension
+            const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+            return {
+              width: Math.min(qrboxSize, 300),
+              height: Math.min(qrboxSize, 300)
+            };
+          },
           aspectRatio: 1.0,
           showTorchButtonIfSupported: true,
-          showZoomSliderIfSupported: true,
-          defaultZoomValueIfSupported: 2,
+          showZoomSliderIfSupported: false, // Disable zoom slider for mobile
+          defaultZoomValueIfSupported: 1,
+          supportedScanTypes: [0], // Only QR codes
         }
 
         scannerRef.current = new Html5QrcodeScanner("qr-scanner", config, false)
@@ -88,22 +98,22 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
 
   if (hasPermission === false) {
     return (
-      <Card className={cn("w-full max-w-md mx-auto", className)}>
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <CameraOff className="h-6 w-6 text-destructive" />
+      <Card className={cn("w-full", className)}>
+        <CardHeader className="text-center pb-3 sm:pb-6">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 sm:mb-4 sm:h-12 sm:w-12">
+            <CameraOff className="h-5 w-5 text-destructive sm:h-6 sm:w-6" />
           </div>
-          <CardTitle className="text-destructive">Camera Access Required</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-destructive text-lg sm:text-xl">Camera Access Required</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Please allow camera access to scan QR codes for attendance
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-lg bg-muted p-4 text-sm">
+        <CardContent className="space-y-3 sm:space-y-4">
+          <div className="rounded-lg bg-muted p-3 text-sm sm:p-4">
             <h4 className="font-medium mb-2">How to enable camera access:</h4>
-            <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-              <li>Click the camera icon in your browser's address bar</li>
-              <li>Select "Allow" for camera permissions</li>
+            <ol className="list-decimal list-inside space-y-1 text-xs text-muted-foreground sm:text-sm">
+              <li>Click the camera icon in your browser&apos;s address bar</li>
+              <li>Select &quot;Allow&quot; for camera permissions</li>
               <li>Refresh the page and try again</li>
             </ol>
           </div>
@@ -117,22 +127,22 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
   }
 
   return (
-    <Card className={cn("w-full max-w-md mx-auto", className)}>
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <QrCode className="h-6 w-6 text-primary" />
+    <Card className={cn("w-full", className)}>
+      <CardHeader className="text-center pb-3 sm:pb-6">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 sm:mb-4 sm:h-12 sm:w-12">
+          <QrCode className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
         </div>
-        <CardTitle>QR Code Scanner</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg sm:text-xl">QR Code Scanner</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
           Position the QR code within the camera frame to mark attendance
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         {!isScanning ? (
-          <div className="space-y-4">
-            <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
-              <Smartphone className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground mb-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 text-center sm:p-8">
+              <Smartphone className="mx-auto h-10 w-10 text-muted-foreground mb-3 sm:h-12 sm:w-12 sm:mb-4" />
+              <p className="text-sm text-muted-foreground mb-3 sm:mb-4">
                 Ready to scan attendance QR code
               </p>
               <Button onClick={startScanner} size="lg" className="w-full">
@@ -143,7 +153,7 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
             
             <div className="space-y-2">
               <h4 className="text-sm font-medium">Instructions:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <ul className="text-xs text-muted-foreground space-y-1 sm:text-sm">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-3 w-3 text-green-600" />
                   Ensure good lighting
@@ -160,24 +170,24 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div id="qr-scanner" className="w-full" ref={elementRef} />
+          <div className="space-y-3 sm:space-y-4">
+            <div id="qr-scanner" className="w-full [&>div]:!w-full [&_video]:!w-full [&_canvas]:!w-full" ref={elementRef} />
             
             <div className="flex items-center justify-between">
-              <Badge variant="success" className="flex items-center gap-1">
+              <Badge variant="success" className="flex items-center gap-1 text-xs sm:text-sm">
                 <div className="h-2 w-2 rounded-full bg-green-600 animate-pulse" />
                 Scanning Active
               </Badge>
               <Button variant="outline" onClick={stopScanner} size="sm">
-                <CameraOff className="mr-2 h-4 w-4" />
-                Stop
+                <CameraOff className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">Stop</span>
               </Button>
             </div>
           </div>
         )}
         
         {scannerError && (
-          <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-xs text-destructive sm:text-sm">
             <AlertCircle className="h-4 w-4 flex-shrink-0" />
             <span>{scannerError}</span>
           </div>
