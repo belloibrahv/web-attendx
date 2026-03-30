@@ -37,7 +37,8 @@ export function QRGenerator({ sessionData, className }: QRGeneratorProps) {
     sessionId: sessionData.id,
     token: sessionData.sessionToken,
     courseCode: sessionData.courseCode,
-    timestamp: new Date().getTime()
+    timestamp: new Date().getTime(),
+    nonce: Math.random().toString(36).substring(2, 15) // Additional randomness
   })
 
   const downloadQR = () => {

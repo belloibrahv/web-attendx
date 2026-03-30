@@ -27,16 +27,32 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
   const [isScanning, setIsScanning] = useState(false)
   const [scannerError, setScannerError] = useState<string | null>(null)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const scannerRef = useRef<Html5QrcodeScanner | null>(null)
   const elementRef = useRef<HTMLDivElement>(null)
 
   const startScanner = async () => {
     try {
-      // Request camera permission
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+      // Clear any existing scanner first
+      if (scannerRef.current) {
+        scannerRef.current.clear()
+        scannerRef.current = null
+      }
+      
+      // Request camera permission with more specific constraints
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: "environment", // Use back camera on mobile
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      })
       stream.getTracks().forEach(track => track.stop()) // Stop the test stream
       setHasPermission(true)
       setScannerError(null)
+      
+      // Wait a bit to ensure DOM is ready
+      await new Promise(resolve => setTimeout(resolve, 100))
       
       if (elementRef.current && !scannerRef.current) {
         const config = {
@@ -56,18 +72,26 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
           showZoomSliderIfSupported: false, // Disable zoom slider for mobile
           defaultZoomValueIfSupported: 1,
           supportedScanTypes: [0], // Only QR codes
+          rememberLastUsedCamera: true,
+          showPermissionButton: true,
         }
 
         scannerRef.current = new Html5QrcodeScanner("qr-scanner", config, false)
         
         scannerRef.current.render(
           (decodedText) => {
+            console.log("QR Code scanned successfully:", decodedText)
             onScanSuccess(decodedText)
             stopScanner()
           },
           (error) => {
             // Ignore frequent scanning errors, only log actual issues
-            if (error.includes("NotFoundException")) return
+            if (error.includes("NotFoundException") || error.includes("No MultiFormat Readers")) return
+            if (error.includes("Camera not found") || error.includes("Permission denied")) {
+              setScannerError("Camera access denied or not available. Please check permissions.")
+              setHasPermission(false)
+              return
+            }
             console.warn("QR scan error:", error)
             onScanError?.(error)
           }
@@ -75,10 +99,22 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
         
         setIsScanning(true)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Camera permission error:", error)
       setHasPermission(false)
-      setScannerError("Camera access denied. Please allow camera permissions and try again.")
+      setRetryCount(prev => prev + 1)
+      
+      if (error.name === "NotAllowedError") {
+        setScannerError("Camera access denied. Please allow camera permissions and try again.")
+      } else if (error.name === "NotFoundError") {
+        setScannerError("No camera found on this device.")
+      } else if (error.name === "NotSupportedError") {
+        setScannerError("Camera not supported on this device or browser.")
+      } else if (error.name === "NotReadableError") {
+        setScannerError("Camera is being used by another application. Please close other camera apps and try again.")
+      } else {
+        setScannerError(`Failed to access camera: ${error.message || 'Unknown error'}. Please check your device settings and try again.`)
+      }
     }
   }
 
@@ -149,6 +185,12 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
                 <Camera className="mr-2 h-4 w-4" />
                 Start Camera
               </Button>
+              
+              {/* Debug info for development */}
+              <div className="mt-4 text-xs text-muted-foreground">
+                <p>Camera support: {navigator.mediaDevices ? "✓" : "✗"}</p>
+                <p>HTTPS: {location.protocol === 'https:' ? "✓" : "✗"}</p>
+              </div>
             </div>
             
             <div className="space-y-2">
