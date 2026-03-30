@@ -307,7 +307,9 @@ export default async function HomePage() {
                       src={supervisor.image} 
                       alt={supervisor.name} 
                       fill 
-                      className="object-cover" 
+                      className="object-cover object-center" 
+                      sizes="(max-width: 1024px) 256px, 300px"
+                      priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   </div>

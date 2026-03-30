@@ -4,6 +4,7 @@ import { ArrowRight, BarChart3, BookOpen, QrCode, Shield, Users } from "lucide-r
 import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { ResearchPresentation } from "@/components/research-presentation";
+import { cn } from "@/lib/utils";
 import {
   featureBlocks,
   homepageStats,
@@ -55,7 +56,7 @@ export default async function HomePage() {
 
   const supervisorImageClass = supervisor.image.endsWith(".svg")
     ? "object-contain p-6"
-    : "object-cover object-top";
+    : "object-cover object-center"; // Better positioning for real photos
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(0,35,95,0.12),transparent_25%),radial-gradient(circle_at_bottom_right,rgba(191,124,9,0.14),transparent_22%),linear-gradient(135deg,#f8fafc_0%,#eef4ff_42%,#fffaf0_100%)]">
@@ -390,9 +391,17 @@ export default async function HomePage() {
                         src={supervisor.image}
                         alt={supervisor.name}
                         fill
-                        className={supervisorImageClass}
+                        className={cn(
+                          supervisorImageClass,
+                          "transition-transform duration-500 hover:scale-105"
+                        )}
                         sizes="(max-width: 1024px) 100vw, 40vw"
+                        priority
                       />
+                      {/* Professional photo overlay for real photos */}
+                      {!supervisor.image.endsWith(".svg") && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                      )}
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent p-6">
                         <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
                           Supervising Lecturer

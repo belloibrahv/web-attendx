@@ -115,5 +115,5 @@ export const supervisor = {
   department: "Department of Computer and Information Science",
   note:
     "The supervising profile is featured on the public homepage to present the project within a formal academic and institutional context.",
-  image: "/avatars/supervisor.svg",
+  image: "/avatars/supervisor.png",
 };
