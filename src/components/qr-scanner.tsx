@@ -25,6 +25,7 @@ interface QRScannerProps {
 
 export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerProps) {
   const [isScanning, setIsScanning] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(false)
   const [scannerError, setScannerError] = useState<string | null>(null)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [retryCount, setRetryCount] = useState(0)
@@ -32,76 +33,93 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
   const elementRef = useRef<HTMLDivElement>(null)
 
   const startScanner = async () => {
+    setIsInitializing(true)
+    
     try {
       // Clear any existing scanner first
       if (scannerRef.current) {
-        scannerRef.current.clear()
+        try {
+          scannerRef.current.clear()
+        } catch (e) {
+          console.log("Error clearing previous scanner:", e)
+        }
         scannerRef.current = null
       }
       
-      // Request camera permission with more specific constraints
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: "environment", // Use back camera on mobile
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      })
-      stream.getTracks().forEach(track => track.stop()) // Stop the test stream
-      setHasPermission(true)
+      // Reset states
       setScannerError(null)
+      setIsScanning(false)
       
-      // Wait a bit to ensure DOM is ready
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
-      if (elementRef.current && !scannerRef.current) {
-        const config = {
-          fps: 10,
-          qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
-            // Make QR box responsive to screen size
-            const minEdgePercentage = 0.7; // 70% of the smaller dimension
-            const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
-            return {
-              width: Math.min(qrboxSize, 300),
-              height: Math.min(qrboxSize, 300)
-            };
-          },
-          aspectRatio: 1.0,
-          showTorchButtonIfSupported: true,
-          showZoomSliderIfSupported: false, // Disable zoom slider for mobile
-          defaultZoomValueIfSupported: 1,
-          supportedScanTypes: [0], // Only QR codes
-          rememberLastUsedCamera: true,
-          showPermissionButton: true,
-        }
-
-        scannerRef.current = new Html5QrcodeScanner("qr-scanner", config, false)
-        
-        scannerRef.current.render(
-          (decodedText) => {
-            console.log("QR Code scanned successfully:", decodedText)
-            onScanSuccess(decodedText)
-            stopScanner()
-          },
-          (error) => {
-            // Ignore frequent scanning errors, only log actual issues
-            if (error.includes("NotFoundException") || error.includes("No MultiFormat Readers")) return
-            if (error.includes("Camera not found") || error.includes("Permission denied")) {
-              setScannerError("Camera access denied or not available. Please check permissions.")
-              setHasPermission(false)
-              return
-            }
-            console.warn("QR scan error:", error)
-            onScanError?.(error)
-          }
-        )
-        
-        setIsScanning(true)
+      // Check if we have camera access without requesting it yet
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera not supported on this device or browser")
       }
+      
+      // Wait for DOM to be ready
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
+      if (!elementRef.current) {
+        throw new Error("Scanner element not ready")
+      }
+      
+      // Clear the element content
+      elementRef.current.innerHTML = ''
+      
+      // Create scanner with simplified config
+      const config = {
+        fps: 10,
+        qrbox: 250, // Fixed size instead of function to avoid issues
+        aspectRatio: 1.0,
+        showTorchButtonIfSupported: true,
+        showZoomSliderIfSupported: false,
+        defaultZoomValueIfSupported: 1,
+        supportedScanTypes: [0], // Only QR codes
+        rememberLastUsedCamera: false, // Disable to avoid conflicts
+        showPermissionButton: false, // We handle permissions ourselves
+        disableFlip: false,
+        videoConstraints: {
+          facingMode: "environment" // Prefer back camera
+        }
+      }
+
+      console.log("Initializing QR scanner...")
+      scannerRef.current = new Html5QrcodeScanner("qr-scanner", config, false)
+      
+      scannerRef.current.render(
+        (decodedText) => {
+          console.log("QR Code scanned successfully:", decodedText)
+          onScanSuccess(decodedText)
+          // Don't stop scanner immediately, let the parent handle it
+        },
+        (error) => {
+          // Only log significant errors
+          if (!error.includes("NotFoundException") && 
+              !error.includes("No MultiFormat Readers") &&
+              !error.includes("NotFoundError")) {
+            console.warn("QR scan error:", error)
+            
+            // Handle camera-related errors
+            if (error.includes("NotAllowedError") || error.includes("Permission denied")) {
+              setScannerError("Camera access denied. Please allow camera permissions.")
+              setHasPermission(false)
+              setIsScanning(false)
+            } else if (error.includes("NotFoundError") || error.includes("Camera not found")) {
+              setScannerError("No camera found on this device.")
+              setHasPermission(false)
+              setIsScanning(false)
+            }
+          }
+        }
+      )
+      
+      setIsScanning(true)
+      setHasPermission(true)
+      console.log("QR scanner initialized successfully")
+      
     } catch (error: any) {
-      console.error("Camera permission error:", error)
+      console.error("Failed to start camera:", error)
       setHasPermission(false)
+      setIsScanning(false)
       setRetryCount(prev => prev + 1)
       
       if (error.name === "NotAllowedError") {
@@ -113,16 +131,30 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
       } else if (error.name === "NotReadableError") {
         setScannerError("Camera is being used by another application. Please close other camera apps and try again.")
       } else {
-        setScannerError(`Failed to access camera: ${error.message || 'Unknown error'}. Please check your device settings and try again.`)
+        setScannerError(`Failed to start camera: ${error.message || 'Unknown error'}. Please try again.`)
       }
+    } finally {
+      setIsInitializing(false)
     }
   }
 
   const stopScanner = () => {
+    console.log("Stopping QR scanner...")
     if (scannerRef.current) {
-      scannerRef.current.clear()
+      try {
+        scannerRef.current.clear()
+        console.log("Scanner cleared successfully")
+      } catch (error) {
+        console.warn("Error clearing scanner:", error)
+      }
       scannerRef.current = null
     }
+    
+    // Clear the element content
+    if (elementRef.current) {
+      elementRef.current.innerHTML = ''
+    }
+    
     setIsScanning(false)
   }
 
@@ -174,14 +206,26 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
-        {!isScanning ? (
+        {isInitializing ? (
+          <div className="space-y-3 sm:space-y-4">
+            <div className="rounded-lg border-2 border-dashed border-primary/25 bg-primary/5 p-6 text-center sm:p-8">
+              <LoadingSpinner size="lg" className="mx-auto mb-3 sm:mb-4" />
+              <p className="text-sm text-muted-foreground mb-3 sm:mb-4">
+                Initializing camera...
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Please allow camera access when prompted
+              </p>
+            </div>
+          </div>
+        ) : !isScanning ? (
           <div className="space-y-3 sm:space-y-4">
             <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 text-center sm:p-8">
               <Smartphone className="mx-auto h-10 w-10 text-muted-foreground mb-3 sm:h-12 sm:w-12 sm:mb-4" />
               <p className="text-sm text-muted-foreground mb-3 sm:mb-4">
                 Ready to scan attendance QR code
               </p>
-              <Button onClick={startScanner} size="lg" className="w-full">
+              <Button onClick={startScanner} size="lg" className="w-full" disabled={isInitializing}>
                 <Camera className="mr-2 h-4 w-4" />
                 Start Camera
               </Button>
@@ -189,7 +233,8 @@ export function QRScanner({ onScanSuccess, onScanError, className }: QRScannerPr
               {/* Debug info for development */}
               <div className="mt-4 text-xs text-muted-foreground">
                 <p>Camera support: {navigator.mediaDevices ? "✓" : "✗"}</p>
-                <p>HTTPS: {location.protocol === 'https:' ? "✓" : "✗"}</p>
+                <p>HTTPS: {typeof window !== 'undefined' && window.location.protocol === 'https:' ? "✓" : "✗"}</p>
+                {retryCount > 0 && <p>Retry attempts: {retryCount}</p>}
               </div>
             </div>
             
