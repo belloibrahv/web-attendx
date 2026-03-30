@@ -56,7 +56,7 @@ type RecentSession = {
 export default function LecturerSessionsPage() {
   const [courses, setCourses] = useState<CourseOption[]>([]);
   const [courseId, setCourseId] = useState("");
-  const [ttlMinutes, setTtlMinutes] = useState(60);
+  const [ttlMinutes, setTtlMinutes] = useState(15);
   const [venue, setVenue] = useState("");
   const [result, setResult] = useState<SessionResult | null>(null);
   const [attendance, setAttendance] = useState<AttendanceItem[]>([]);
@@ -120,15 +120,9 @@ export default function LecturerSessionsPage() {
         setTimeLeft("Expired");
         return;
       }
-      const hours = Math.floor(diffMs / 3600000);
-      const minutes = Math.floor((diffMs % 3600000) / 60000);
+      const minutes = Math.floor(diffMs / 60000);
       const seconds = Math.floor((diffMs % 60000) / 1000);
-      
-      if (hours > 0) {
-        setTimeLeft(`${hours}h ${minutes}m ${seconds.toString().padStart(2, "0")}s`);
-      } else {
-        setTimeLeft(`${minutes}m ${seconds.toString().padStart(2, "0")}s`);
-      }
+      setTimeLeft(`${minutes}m ${seconds.toString().padStart(2, "0")}s`);
     }, 1000);
     return () => clearInterval(interval);
   }, [result?.expiresAt]);
@@ -137,9 +131,9 @@ export default function LecturerSessionsPage() {
     setError("");
     setIsCreating(true);
 
-    const normalizedTtl = Math.min(480, Math.max(5, Math.round(ttlMinutes)));
+    const normalizedTtl = Math.min(15, Math.max(5, Math.round(ttlMinutes)));
     if (!Number.isFinite(normalizedTtl)) {
-      setError("Session duration must be between 5 minutes and 8 hours (480 minutes).");
+      setError("Session duration must be between 5 and 15 minutes.");
       setIsCreating(false);
       return;
     }
@@ -240,8 +234,8 @@ export default function LecturerSessionsPage() {
                     id="duration"
                     type="number"
                     min={5}
-                    max={480}
-                    step={5}
+                    max={15}
+                    step={1}
                     value={ttlMinutes}
                     onChange={(e) => {
                       const nextValue = Number(e.target.value);
@@ -249,11 +243,11 @@ export default function LecturerSessionsPage() {
                         setTtlMinutes(15);
                         return;
                       }
-                      setTtlMinutes(Math.min(480, Math.max(5, nextValue)));
+                      setTtlMinutes(Math.min(15, Math.max(5, nextValue)));
                     }}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Session duration: 5 minutes to 8 hours (480 minutes).
+                    Session duration: 5 to 15 minutes only.
                   </p>
                 </div>
               </div>
