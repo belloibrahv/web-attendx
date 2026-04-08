@@ -38,8 +38,9 @@ Add these environment variables in the Render dashboard:
 NODE_ENV=production
 DATABASE_URL=[Your PostgreSQL External Database URL from step 1]
 NEXTAUTH_SECRET=[Generate a secure random string - use: openssl rand -base64 32]
-NEXTAUTH_URL=[Your Render app URL - will be provided after deployment]
 ```
+
+**Important:** Do NOT set `NEXTAUTH_URL` in production. NextAuth.js will automatically detect the correct URL.
 
 ### 4. Database Migration
 After first deployment:
@@ -47,11 +48,6 @@ After first deployment:
 2. Open the "Shell" tab
 3. Run: `npx prisma migrate deploy`
 4. Run: `npm run db:seed` (to populate with test data)
-
-### 5. Update NEXTAUTH_URL
-1. After deployment, copy your app URL (e.g., `https://tasued-attendx.onrender.com`)
-2. Update the `NEXTAUTH_URL` environment variable with this URL
-3. Redeploy the service
 
 ## Test Accounts
 After seeding, you can login with:
@@ -76,6 +72,18 @@ After seeding, you can login with:
 - Set up backup strategies for database
 
 ## Troubleshooting
+
+### Logout Redirects to Localhost
+- Ensure `NEXTAUTH_URL` is NOT set in production environment variables
+- NextAuth.js automatically detects the production URL
+- If set incorrectly, remove the variable and redeploy
+
+### QR Scanner Issues  
+- Ensure the site is served over HTTPS (Render provides this automatically)
+- Camera access requires a secure context
+- Try the alternative scanner if the primary one fails
+
+### Other Issues
 - Check build logs in Render dashboard
 - Verify all environment variables are set
 - Ensure database is accessible

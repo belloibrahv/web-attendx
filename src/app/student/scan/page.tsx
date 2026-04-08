@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { QRScanner } from "@/components/qr-scanner";
+import { QRScannerReliable } from "@/components/qr-scanner-reliable";
+import { QRScannerModern } from "@/components/qr-scanner-modern";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
@@ -15,7 +16,8 @@ import {
   Clock, 
   BookOpen,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  RotateCcw
 } from "lucide-react";
 
 interface AttendanceMeta {
@@ -32,6 +34,7 @@ export default function StudentScanPage() {
   const [statusType, setStatusType] = useState<"idle" | "success" | "error">("idle");
   const [attendanceMeta, setAttendanceMeta] = useState<AttendanceMeta | null>(null);
   const [showScanner, setShowScanner] = useState(true);
+  const [useFallbackScanner, setUseFallbackScanner] = useState(false);
 
   async function handleScanSuccess(decodedText: string) {
     setIsSubmitting(true);
@@ -74,6 +77,10 @@ export default function StudentScanPage() {
 
   function handleScanError(error: string) {
     console.warn("QR scan error:", error);
+    // If we get a critical error with the main scanner, suggest fallback
+    if (error.includes("HTML Element") || error.includes("not found") || error.includes("failed to start")) {
+      setUseFallbackScanner(true);
+    }
   }
 
   function resetScanner() {
@@ -81,6 +88,13 @@ export default function StudentScanPage() {
     setStatusType("idle");
     setAttendanceMeta(null);
     setShowScanner(true);
+    setUseFallbackScanner(false);
+  }
+
+  function switchToFallback() {
+    setUseFallbackScanner(!useFallbackScanner);
+    setStatus("");
+    setStatusType("idle");
   }
 
   return (
@@ -140,10 +154,32 @@ export default function StudentScanPage() {
           {/* Scanner Section */}
           <div className="space-y-4">
             {showScanner && !isSubmitting && statusType !== "success" && (
-              <QRScanner 
-                onScanSuccess={handleScanSuccess}
-                onScanError={handleScanError}
-              />
+              <>
+                {!useFallbackScanner ? (
+                  <QRScannerReliable 
+                    onScanSuccess={handleScanSuccess}
+                    onScanError={handleScanError}
+                  />
+                ) : (
+                  <QRScannerModern 
+                    onScanSuccess={handleScanSuccess}
+                    onScanError={handleScanError}
+                  />
+                )}
+                
+                {/* Scanner Switch Options */}
+                <div className="flex justify-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={switchToFallback}
+                    className="text-xs"
+                  >
+                    <RotateCcw className="mr-2 h-3 w-3" />
+                    {useFallbackScanner ? "Switch to Primary Scanner" : "Try Alternative Scanner"}
+                  </Button>
+                </div>
+              </>
             )}
 
             {isSubmitting && (
