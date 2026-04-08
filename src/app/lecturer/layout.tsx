@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/require-auth";
+import { LecturerErrorBoundary } from "@/components/lecturer-error-boundary";
 
 export default async function LecturerLayout({
   children,
@@ -6,6 +7,10 @@ export default async function LecturerLayout({
   children: React.ReactNode;
 }) {
   await requireRole(["LECTURER"]);
-  return children;
+  return (
+    <LecturerErrorBoundary>
+      {children}
+    </LecturerErrorBoundary>
+  );
 }
 

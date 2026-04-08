@@ -66,6 +66,7 @@ export default function LecturerSessionsPage() {
   const [error, setError] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   async function loadRecentSessions() {
     try {
@@ -73,6 +74,8 @@ export default function LecturerSessionsPage() {
       const data = await response.json();
       if (response.ok && data.ok) {
         setRecentSessions(data.sessions);
+      } else {
+        console.error("Failed to load recent sessions:", data.message);
       }
     } catch (err) {
       console.error("Failed to load recent sessions:", err);
@@ -84,11 +87,18 @@ export default function LecturerSessionsPage() {
       try {
         const response = await fetch("/api/lecturer/courses");
         const data = await response.json();
-        if (!response.ok || !data.ok) return;
+        if (!response.ok || !data.ok) {
+          console.error("Failed to load courses:", data.message);
+          setError(data.message || "Failed to load courses");
+          return;
+        }
         setCourses(data.courses);
         if (data.courses.length > 0) setCourseId(data.courses[0].id);
       } catch (err) {
         console.error("Failed to load courses:", err);
+        setError("Network error loading courses");
+      } finally {
+        setIsLoading(false);
       }
     })();
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -196,6 +206,43 @@ export default function LecturerSessionsPage() {
   }
 
   const selectedCourse = courses.find(c => c.id === courseId);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <DashboardShell role="lecturer" title="Attendance Sessions">
+        <div className="mx-auto max-w-6xl">
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <LoadingSpinner size="lg" className="mb-4" />
+              <p className="text-muted-foreground">Loading lecturer dashboard...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <DashboardShell role="lecturer" title="Attendance Sessions">
+        <div className="mx-auto max-w-6xl">
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Error Loading Dashboard</h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Reload Page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell role="lecturer" title="Attendance Sessions">

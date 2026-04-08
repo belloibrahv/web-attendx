@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
       sessionId: seedSession.id,
       expiresAt: expiresAt.toISOString(),
       encodedPayload,
+      sessionToken: token,
       course,
     });
   } catch (error) {
