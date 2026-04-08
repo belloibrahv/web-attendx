@@ -42,30 +42,32 @@ export function QRScannerModern({ onScanSuccess, onScanError, className }: QRSca
     setIsSecureContext(window.isSecureContext)
   }, [])
 
-  const handleScanResult = useCallback((result: string) => {
-    if (hasHandledResult.current) return
+  const handleScanResult = useCallback((detectedCodes: any[]) => {
+    if (hasHandledResult.current || !detectedCodes || detectedCodes.length === 0) return
     
     hasHandledResult.current = true
+    const result = detectedCodes[0]?.rawValue || detectedCodes[0]
     setScanResult(result)
     setIsScanning(false)
     onScanSuccess(result)
   }, [onScanSuccess])
 
-  const handleScanError = useCallback((error: Error) => {
-    console.warn("QR scan error:", error)
+  const handleScanError = useCallback((error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.warn("QR scan error:", errorMessage)
     
     // Only handle significant errors, not routine scanning failures
-    if (error.message.includes("NotAllowedError") || error.message.includes("Permission denied")) {
+    if (errorMessage.includes("NotAllowedError") || errorMessage.includes("Permission denied")) {
       setScannerError("Camera access denied. Please allow camera permissions.")
       setHasPermission(false)
       setIsScanning(false)
       onScanError?.("Camera access denied")
-    } else if (error.message.includes("NotFoundError") || error.message.includes("No camera")) {
+    } else if (errorMessage.includes("NotFoundError") || errorMessage.includes("No camera")) {
       setScannerError("No camera found on this device.")
       setHasPermission(false)
       setIsScanning(false)
       onScanError?.("No camera found")
-    } else if (error.message.includes("NotSupportedError")) {
+    } else if (errorMessage.includes("NotSupportedError")) {
       setScannerError("Camera not supported in this browser.")
       setHasPermission(false)
       setIsScanning(false)
@@ -246,7 +248,6 @@ export function QRScannerModern({ onScanSuccess, onScanError, className }: QRSca
                   }
                 }}
                 components={{
-                  audio: false,
                   finder: true
                 }}
               />
