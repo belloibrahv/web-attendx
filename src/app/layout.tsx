@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex min-h-full flex-col bg-background text-foreground font-body">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

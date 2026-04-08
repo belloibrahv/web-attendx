@@ -84,9 +84,18 @@ export const authOptions: NextAuthOptions = {
     async signOut() {
       // Clear any cached data on signout
     },
+    async signIn({ user, account, profile, isNewUser }) {
+      // Log successful sign ins
+      console.log("User signed in:", user.email);
+    },
   },
   // Only enable debug in development
-  debug: false,
+  debug: process.env.NODE_ENV === "development",
   // Add secret explicitly
   secret: process.env.NEXTAUTH_SECRET,
+  // Add JWT configuration to handle errors better
+  jwt: {
+    // Reduce max age to prevent long-lived problematic tokens
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
 };

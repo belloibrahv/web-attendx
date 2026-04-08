@@ -7,6 +7,8 @@ export async function getSafeSession() {
     return { session, error: null };
   } catch (error) {
     console.log("Session validation error:", error);
+    // For JWT decryption errors, we should clear the session
+    // This typically happens when NEXTAUTH_SECRET changes or tokens are corrupted
     return { session: null, error: error as Error };
   }
 }
