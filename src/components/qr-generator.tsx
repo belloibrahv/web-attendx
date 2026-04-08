@@ -16,10 +16,12 @@ import {
   AlertCircle
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { encodePayload } from "@/lib/qr"
 
 interface QRGeneratorProps {
   sessionData: {
     id: string
+    courseId: string
     sessionToken: string
     courseCode: string
     courseTitle: string
@@ -33,13 +35,19 @@ interface QRGeneratorProps {
 export function QRGenerator({ sessionData, className }: QRGeneratorProps) {
   const qrRef = useRef<HTMLDivElement>(null)
   
-  const qrValue = JSON.stringify({
+  // Create the proper payload format that matches what the API expects
+  const payload = {
     sessionId: sessionData.id,
+    courseId: sessionData.courseId,
     token: sessionData.sessionToken,
-    courseCode: sessionData.courseCode,
-    timestamp: new Date().getTime(),
-    nonce: Math.random().toString(36).substring(2, 15) // Additional randomness
-  })
+    expires: sessionData.expiryTime,
+  }
+  
+  // Encode the payload using the same function used by the backend
+  const qrValue = encodePayload(payload)
+  
+  console.log("Generated QR payload:", payload)
+  console.log("Encoded QR value:", qrValue)
 
   const downloadQR = () => {
     if (!qrRef.current) return

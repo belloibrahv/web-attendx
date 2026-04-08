@@ -29,6 +29,7 @@ type SessionResult = {
   course?: { courseCode: string; courseTitle: string };
   venue?: string;
   status: string;
+  courseId: string;
 };
 
 type CourseOption = {
@@ -161,7 +162,8 @@ export default function LecturerSessionsPage() {
         sessionToken: data.sessionToken || data.encodedPayload,
         course: data.course,
         venue: venue || undefined,
-        status: "ACTIVE"
+        status: "ACTIVE",
+        courseId: courseId,
       });
       setAttendance([]);
       await loadRecentSessions();
@@ -320,6 +322,7 @@ export default function LecturerSessionsPage() {
             <QRGenerator 
               sessionData={{
                 id: result.sessionId,
+                courseId: result.courseId,
                 sessionToken: result.sessionToken,
                 courseCode: result.course?.courseCode || "",
                 courseTitle: result.course?.courseTitle || "",

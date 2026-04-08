@@ -23,7 +23,18 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const input = scanAttendanceSchema.parse(body);
-    const payload = decodePayload(input.encodedPayload);
+    
+    // Try to decode the payload with better error handling
+    let payload;
+    try {
+      payload = decodePayload(input.encodedPayload);
+    } catch (decodeError) {
+      console.error("QR decode error:", decodeError);
+      return Response.json({ 
+        ok: false, 
+        message: "Invalid QR code format. Please scan a valid attendance QR code." 
+      }, { status: 400 });
+    }
 
     const session = await db.session.findUnique({
       where: { id: payload.sessionId },
@@ -111,6 +122,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    console.error("Attendance scan error:", error);
     return Response.json(
       { ok: false, message: error instanceof Error ? error.message : "Failed to scan attendance." },
       { status: 400 }
