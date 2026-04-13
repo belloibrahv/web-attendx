@@ -79,32 +79,32 @@ export const workflowSteps = [
 export const projectTeam = [
   {
     name: "Erinfolami Mukaram Adeolu",
-    matricNumber: "20220294015",
-    role: "Research & Product Coordination",
+    matricNumber: "202202940152",
+    department: "Computer Science",
     avatar: "/avatars/erinfolami.svg",
   },
   {
     name: "Amabo Ogheneruona David",
-    matricNumber: "20220294003",
-    role: "Backend & Data Architecture",
+    matricNumber: "202202940033",
+    department: "Computer Science",
     avatar: "/avatars/amabo.svg",
   },
   {
     name: "Aina Imaadudeen Abiodun",
-    matricNumber: "20220204001",
-    role: "Systems Analysis & Documentation",
+    matricNumber: "202202040014",
+    department: "Computer Science",
     avatar: "/avatars/aina.svg",
   },
   {
     name: "Abdulmalik Ibrahim Opeyemi",
-    matricNumber: "20220294002",
-    role: "Frontend Development & UX",
+    matricNumber: "202202940025",
+    department: "Computer Science",
     avatar: "/avatars/abdulmalik.svg",
   },
   {
-    name: "Bello Kudirat Adunni",
-    matricNumber: "20220294005",
-    role: "Quality Assurance & Testing",
+    name: "Olatunde Gbadebo Oreoluwa",
+    matricNumber: "20220204003",
+    department: "Computer Science and Education",
     avatar: "/avatars/collaborator.svg",
   },
 ];
