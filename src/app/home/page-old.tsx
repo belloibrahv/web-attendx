@@ -278,9 +278,9 @@ export default async function HomePage() {
                     </p>
                   </div>
                   
-                  {/* Role */}
+                  {/* Department */}
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    {member.role}
+                    {member.department}
                   </p>
                 </div>
               ))}
