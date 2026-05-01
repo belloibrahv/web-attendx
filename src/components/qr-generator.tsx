@@ -46,8 +46,14 @@ export function QRGenerator({ sessionData, className }: QRGeneratorProps) {
   // Encode the payload using the same function used by the backend
   const qrValue = encodePayload(payload)
   
-  console.log("Generated QR payload:", payload)
-  console.log("Encoded QR value:", qrValue)
+  console.log("[QR Generator] Generated QR payload:", {
+    sessionId: payload.sessionId,
+    courseId: payload.courseId,
+    expires: payload.expires,
+    tokenLength: payload.token.length
+  })
+  console.log("[QR Generator] Encoded QR value length:", qrValue.length)
+  console.log("[QR Generator] Encoded QR value (first 50 chars):", qrValue.substring(0, 50))
 
   const downloadQR = () => {
     if (!qrRef.current) return

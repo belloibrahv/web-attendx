@@ -11,19 +11,31 @@ export async function POST(req: NextRequest) {
   try {
     await expireOverdueSessions();
     const session = await getServerSession(authOptions);
+    
+    console.log("[Session Create] Request from user:", session?.user?.email);
+    
     if (!session?.user?.id || session.user.role !== "LECTURER") {
+      console.log("[Session Create] Unauthorized: No session or not a lecturer");
       return Response.json({ ok: false, message: "Unauthorized" }, { status: 401 });
     }
+    
     const lecturer = await db.lecturer.findUnique({
       where: { userId: session.user.id },
-      select: { id: true },
+      select: { id: true, firstName: true, lastName: true },
     });
+    
     if (!lecturer) {
+      console.log("[Session Create] Lecturer profile not found for user:", session.user.id);
       return Response.json({ ok: false, message: "Lecturer profile not found." }, { status: 404 });
     }
+    
+    console.log("[Session Create] Lecturer found:", lecturer.id);
 
     const body = await req.json();
+    console.log("[Session Create] Request body:", body);
+    
     const input = createSessionSchema.parse(body);
+    
     const course = await db.course.findFirst({
       where: {
         id: input.courseId,
@@ -35,9 +47,13 @@ export async function POST(req: NextRequest) {
         courseTitle: true,
       },
     });
+    
     if (!course) {
+      console.log("[Session Create] Course not found or not assigned to lecturer:", input.courseId);
       return Response.json({ ok: false, message: "You can only open sessions for your assigned courses." }, { status: 403 });
     }
+    
+    console.log("[Session Create] Course found:", course.courseCode);
 
     const existingActiveSession = await db.session.findFirst({
       where: {
@@ -56,7 +72,9 @@ export async function POST(req: NextRequest) {
         startTime: "desc",
       },
     });
+    
     if (existingActiveSession) {
+      console.log("[Session Create] Active session already exists:", existingActiveSession.id);
       return Response.json(
         {
           ok: false,
@@ -67,7 +85,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const token = generateSessionToken();
+    console.log("[Session Create] Generating session token...");
+    const token = await generateSessionToken();
+    console.log("[Session Create] Token generated, length:", token.length);
+    
     const seedSession = await db.session.create({
       data: {
         courseId: input.courseId,
@@ -78,6 +99,8 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, courseId: true },
     });
+    
+    console.log("[Session Create] Session created in DB:", seedSession.id);
 
     const { payload, expiresAt } = buildSessionPayload({
       sessionId: seedSession.id,
@@ -85,12 +108,23 @@ export async function POST(req: NextRequest) {
       token,
       ttlMinutes: input.ttlMinutes,
     });
+    
+    console.log("[Session Create] Payload built:", {
+      sessionId: payload.sessionId,
+      courseId: payload.courseId,
+      expires: payload.expires,
+      tokenLength: payload.token.length
+    });
+    
     const encodedPayload = encodePayload(payload);
+    console.log("[Session Create] Payload encoded, length:", encodedPayload.length);
 
     await db.session.update({
       where: { id: seedSession.id },
       data: { expiryTime: expiresAt },
     });
+    
+    console.log("[Session Create] Session expiry time updated to:", expiresAt.toISOString());
 
     return Response.json({
       ok: true,
@@ -101,6 +135,7 @@ export async function POST(req: NextRequest) {
       course,
     });
   } catch (error) {
+    console.error("[Session Create] Error:", error);
     if (error instanceof ZodError) {
       return Response.json(
         {
