@@ -79,25 +79,25 @@ export const workflowSteps = [
 export const projectTeam = [
   {
     name: "Erinfolami Mukaram Adeolu",
-    matricNumber: "202202940152",
+    matricNumber: "20220294015",
     department: "Computer Science",
     avatar: "/avatars/erinfolami.svg",
   },
   {
     name: "Amabo Ogheneruona David",
-    matricNumber: "202202940033",
+    matricNumber: "20220294003",
     department: "Computer Science",
     avatar: "/avatars/amabo.svg",
   },
   {
     name: "Aina Imaadudeen Abiodun",
-    matricNumber: "202202040014",
+    matricNumber: "20220204001",
     department: "Computer Science",
     avatar: "/avatars/aina.svg",
   },
   {
     name: "Abdulmalik Ibrahim Opeyemi",
-    matricNumber: "202202940025",
+    matricNumber: "20220294002",
     department: "Computer Science",
     avatar: "/avatars/abdulmalik.svg",
   },
