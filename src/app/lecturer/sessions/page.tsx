@@ -74,11 +74,46 @@ export default function LecturerSessionsPage() {
       const data = await response.json();
       if (response.ok && data.ok) {
         setRecentSessions(data.sessions);
+        
+        // Auto-load active session if one exists and we don't have one loaded
+        if (!result && data.sessions.length > 0) {
+          const activeSession = data.sessions.find((s: RecentSession) => s.status === "ACTIVE");
+          if (activeSession) {
+            await loadActiveSession(activeSession.id);
+          }
+        }
       } else {
         console.error("Failed to load recent sessions:", data.message);
       }
     } catch (err) {
       console.error("Failed to load recent sessions:", err);
+    }
+  }
+
+  async function loadActiveSession(sessionId: string) {
+    try {
+      const response = await fetch(`/api/sessions/${sessionId}/attendance`);
+      const data = await response.json();
+      
+      if (response.ok && data.ok && data.session) {
+        const session = data.session;
+        
+        // Reconstruct the session result
+        setResult({
+          sessionId: session.id,
+          expiresAt: session.expiryTime,
+          encodedPayload: session.encodedPayload || "",
+          sessionToken: session.sessionToken,
+          course: session.course,
+          venue: session.venue,
+          status: session.status,
+          courseId: session.courseId,
+        });
+        
+        setAttendance(data.session.attendance || []);
+      }
+    } catch (err) {
+      console.error("Failed to load active session:", err);
     }
   }
 
@@ -364,7 +399,26 @@ export default function LecturerSessionsPage() {
 
         {/* Active Session */}
         {result && (
-          <div className="grid gap-8 lg:grid-cols-2">
+          <>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Active Session</h2>
+                <p className="text-muted-foreground">
+                  Monitoring attendance for {result.course?.courseCode}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setResult(null);
+                  setAttendance([]);
+                }}
+              >
+                Create New Session
+              </Button>
+            </div>
+            
+            <div className="grid gap-8 lg:grid-cols-2">
             {/* QR Code Display */}
             <QRGenerator 
               sessionData={{
@@ -461,6 +515,7 @@ export default function LecturerSessionsPage() {
               </CardContent>
             </Card>
           </div>
+          </>
         )}
 
         {/* Recent Sessions */}
@@ -484,7 +539,7 @@ export default function LecturerSessionsPage() {
               <div className="space-y-3">
                 {recentSessions.map((session) => (
                   <div key={session.id} className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors">
-                    <div className="space-y-1">
+                    <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-sm">
                           {session.course.courseCode} - {session.course.courseTitle}
@@ -509,13 +564,25 @@ export default function LecturerSessionsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold text-primary">
-                        {session._count.attendance}
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-primary">
+                          {session._count.attendance}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          attendees
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        attendees
-                      </div>
+                      {session.status === "ACTIVE" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => loadActiveSession(session.id)}
+                          disabled={result?.sessionId === session.id}
+                        >
+                          {result?.sessionId === session.id ? "Viewing" : "View Session"}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
