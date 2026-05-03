@@ -83,7 +83,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex rounded-xl bg-gradient-to-r from-primary to-accent px-3 py-1.5 text-sm font-medium text-white shadow-lg shadow-primary/15 transition hover:-translate-y-0.5 hover:shadow-xl sm:px-4 sm:py-2"
+              className="inline-flex rounded-xl bg-gradient-to-r from-primary to-accent px-3 py-1.5 text-sm font-medium text-white shadow-lg shadow-primary/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:scale-105 sm:px-4 sm:py-2 animate-pulse"
             >
               Login
             </Link>
@@ -137,10 +137,10 @@ export default async function HomePage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-base font-semibold text-white shadow-xl shadow-primary/15 transition hover:-translate-y-1 hover:shadow-2xl sm:gap-3 sm:px-8 sm:py-4 sm:text-lg"
+                    className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-base font-semibold text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-3xl hover:scale-105 sm:gap-3 sm:px-8 sm:py-4 sm:text-lg animate-bounce"
                   >
-                    Access Platform
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span>Get Started</span>
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                   <Link
                     href="/register"
@@ -476,10 +476,10 @@ export default async function HomePage() {
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-lg font-semibold text-primary shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
+                className="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-lg font-semibold text-primary shadow-2xl shadow-white/20 transition-all duration-300 hover:-translate-y-2 hover:shadow-3xl hover:scale-110"
               >
                 Login Now
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-2" />
               </Link>
               <Link
                 href="/register"

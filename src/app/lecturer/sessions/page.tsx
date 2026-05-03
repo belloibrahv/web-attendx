@@ -378,8 +378,9 @@ export default function LecturerSessionsPage() {
               <Button 
                 onClick={handleCreateSession} 
                 disabled={!courseId || isCreating}
+                variant="cta"
+                size="xl"
                 className="w-full"
-                size="lg"
               >
                 {isCreating ? (
                   <>
@@ -388,7 +389,7 @@ export default function LecturerSessionsPage() {
                   </>
                 ) : (
                   <>
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-2 h-5 w-5" />
                     Create Session & Generate QR
                   </>
                 )}
@@ -409,11 +410,14 @@ export default function LecturerSessionsPage() {
               </div>
               <Button
                 variant="outline"
+                size="lg"
                 onClick={() => {
                   setResult(null);
                   setAttendance([]);
                 }}
+                className="font-semibold"
               >
+                <Plus className="mr-2 h-5 w-5" />
                 Create New Session
               </Button>
             </div>
@@ -575,10 +579,11 @@ export default function LecturerSessionsPage() {
                       </div>
                       {session.status === "ACTIVE" && (
                         <Button
-                          variant="outline"
+                          variant="cta"
                           size="sm"
                           onClick={() => loadActiveSession(session.id)}
                           disabled={result?.sessionId === session.id}
+                          className="font-semibold"
                         >
                           {result?.sessionId === session.id ? "Viewing" : "View Session"}
                         </Button>

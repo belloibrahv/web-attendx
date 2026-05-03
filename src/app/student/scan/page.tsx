@@ -261,8 +261,13 @@ export default function StudentScanPage() {
                   )}
                   
                   {statusType === "error" && (
-                    <Button onClick={resetScanner} className="w-full mt-4">
-                      <RefreshCw className="mr-2 h-4 w-4" />
+                    <Button 
+                      onClick={resetScanner} 
+                      variant="cta"
+                      size="lg"
+                      className="w-full mt-4"
+                    >
+                      <RefreshCw className="mr-2 h-5 w-5" />
                       Try Again
                     </Button>
                   )}

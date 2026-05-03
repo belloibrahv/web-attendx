@@ -192,8 +192,14 @@ export function QRScannerModern({ onScanSuccess, onScanError, className }: QRSca
               <p className="text-sm text-muted-foreground mb-3 sm:mb-4">
                 Ready to scan attendance QR code
               </p>
-              <Button onClick={startScanning} size="lg" className="w-full" disabled={isInitializing}>
-                <Camera className="mr-2 h-4 w-4" />
+              <Button 
+                onClick={startScanning} 
+                variant="cta"
+                size="xl" 
+                className="w-full" 
+                disabled={isInitializing}
+              >
+                <Camera className="mr-2 h-5 w-5" />
                 Start Camera
               </Button>
               
