@@ -75,7 +75,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
   const navigation = navigationConfig[role]
   
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" })
+    signOut({ callbackUrl: "/home" })
   }
 
   const getUserInitials = (name?: string) => {

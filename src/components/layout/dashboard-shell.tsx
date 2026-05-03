@@ -117,7 +117,7 @@ export function DashboardShell({
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 text-white/80 hover:bg-white/15 hover:text-white transition-all duration-200 hover:translate-x-1"
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => signOut({ callbackUrl: "/home" })}
               >
                 <LogOut className="size-4" />
                 Sign out

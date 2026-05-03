@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   },
   description:
     "A mobile-first QR-based attendance management system for Tai Solarin University of Education (TASUED).",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/main-logo.png', sizes: '418x406', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/main-logo.png', sizes: '418x406', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
